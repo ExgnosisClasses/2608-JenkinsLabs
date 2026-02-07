@@ -2,6 +2,7 @@
 
 The objective of this lab is get you familiar with the basic Jenkins web interface and how jobs are defined and run in Jenkins.
 
+
 ## Part 1: Starting up Jenkins
 
 For this class, you will be running Jenkins from the `jenkins.war` file.
