@@ -1,13 +1,16 @@
 # Lab 1 - Freestyle Project
 
+The objective of this lab is get you familiar with the basic Jenkins web interface and how jobs are defined and run in Jenkins.
+
 ## Part 1: Starting up Jenkins
 
-- For this class, you will be running Jenkins from the `jenkins.war` file.
-  - This means that you will have to start Jenkins yourself
+For this class, you will be running Jenkins from the `jenkins.war` file.
+
+The first task in this lab is to start Jenkins and log in as the Student user.
 
 ### Jenkins Location 
 
-Jenkins maintains its state ad configuration in a directory `.jenkins`
+Jenkins maintains its state and configuration in a directory `.jenkins`
 - Deleting this directory effective uninstalls Jenkins from your system so *do not remove or move this directory.*
 - Jenkins has already been set up and configured for this class using the Jenkins configuration located at: `C:\Jenkins\.jenkins`
 - All the labs have been tested with this specific configuration
@@ -24,8 +27,8 @@ java -DJENKINS_HOME=C:\Jenkins\.jenkins \
 ```
 
 This file contains two critical start up options.
-- The `JENKINS_HOME` option will use the configured Jenkins instance
-- The `ALLOW_LOCAL_CHECKOUT` option which will allow you to use local git repositories - the default for Jenkins is to only allow remote repositories
+- The `JENKINS_HOME` option that ensures Jenkins uses the installed and configured Jenkins instance
+- The `ALLOW_LOCAL_CHECKOUT` option which allows you to use local git repositories - the default for Jenkins is to only allow remote repositories
 
 Run the `start.bat` file to start Jenkins. 
 
@@ -46,7 +49,7 @@ You should see the login screen
 
 Both the Chrome and Edge browsers should have the user id and password autofilled. 
 
-If you need to enter the userid and password manually, the credentials are"
+If you need to enter the userid and password manually, the credentials are:
 - user: `Student`
 - pass: `Pa$$w0rd`
 
@@ -96,7 +99,7 @@ We will not be using the `Environment` section in this lab.
 
 <img src="images/8.env.png" />
 
-Examine each item using the `?` where it exists in these two sections
+However, you should examine each item using the `?` where it exists in these two sections
 
 ### Build Step
 
@@ -112,7 +115,7 @@ Enter the command `echo "Hello World"` as shown.
 
 ### Post Build Steps
 
-We won't be using these in this lab. Click on the `Add` button to see the options available. Post build actions often come from plugins, usually ones that allow integration with other tools like Slack.
+We won't be using these in this lab. Click on the `Add` button to see the options available. Post build actions often come from plugins. These often  allow integration with other tools like Slack.
 
 <img src="images/10.postbuild.png" />
 
@@ -177,5 +180,21 @@ Save and run the project. You should see this build show up as a failed build.
 Open the screen for the failed build and open the `Console Output` to see the result of the failure.
 
 <img src="images/19error.png" />
+
+### Main Display
+
+Return to the main screen and find the icon under the `W`. This is a visual indicator of the success of the last few builds. The so-called weather indicator.
+
+Using the green arrow, continue to run failing builds. After each one, refresh the screen and check the status of the weather. Eventually, it will show a thunderstorm like this:
+
+<img src="images/weather1.png" />
+
+Go back and correct the error and start running builds from the main screen that pass and refresh the main page after each build.
+
+After a while, notice that the weather icon has changed to a sunny day.
+
+<img src="images/weather2.png" />
+
+## End Lab
 
 
