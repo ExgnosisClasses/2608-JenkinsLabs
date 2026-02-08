@@ -1,140 +1,269 @@
-# Lab 2 - SCM and Build Tools
+# Lab 3 - Pipelines
 
-The objective of this lab work git repositories and to use the Maven plug that integrates Maven with Jenkins.
+The objective of this lab work is to introduce working with Jenkins pipelines.
 
-Check to see that Jenkins is running and that you are logged in before starting the project
+Check to see that Jenkins is running and that you are logged in before starting the project.
 
-## Part 1: Create and Run the Project
+## Part 1: Create and Run a Simple Pipeline
 
-Go to the main screen and select the `New Item` option. At the project definition screen, select the `Maven Project' option. If you don't see it, then the Maven plugin needs to be installed. THe instructor can show you how to do this.
+Go to the main screen and select the `New Item` option. At the project definition screen, select the `Pipeline` option the same way you did for the previous project.
 
-<img src="images/1.maven.png" />
 
-You also need to have the Maven Tool Definition entered in the Jenkins tool section. This should be done already in the Tools section of Jenkins as shown below
+### The Script
 
-<img src="images/2.Maven.png" />
+Open the configuration screen for the project. Scroll down to the  `Pipeline` section. In the dropdown list on the right, select the `Hello World` script
 
-If this is not defined, the instructor can guide you on how to define it.
+<img src="images/1.script.png" />
 
-### SCM
+Save the project and run it.
 
-Open the configuration screen for the project. The first step is to provide Jenkins with the location of the remote repository.
+### The Output
 
-The repository we will be using is `https://github.com/ExgnosisClasses/MavenReferenceProject.git`
+Go to the build screen for the build and open the `Consol Output` where you can see the output of the pipeline script
 
-Under the source code management section of the project, enter the repository location as shown.
+<img src="images/2.output.png" />
 
-You also need to change the branch name from `master` to `main`. Jenkins defaults to using the older branch naming convention.
+In addition, Jenkins produces an overview of what happened in each stage in the pipeline. Since there is only one stage, there is not much here
 
+<img src="images/3.steps.png" />
 
-<img src="images/3.maven.png" />
 
-### Build Step and Run
+## Part 2: Download the Scripts
 
-Because this is a Maven project, the plugin has added some Maven specific configuration items. You can leave the POM file specification as it is, but under the `Goals and Options` section, we specify the specific actions we want Maven to execute. In this case `clean, validate and package`
+For the rest of the lab, you will be working with scripts from repository `https://github.com/ExgnosisClasses/JenkinsFile.git`
 
-<img src="images/4.mvn.png" />
+Clone this git repository into your lab machine. In this example, it is being cloned into the `C:\repos` directory
 
-Once this is done, save your configuration and run the project. The first time you run the project, it may take a long time if it needs to retrieve the dependencies from Maven Central.
+<img src="images/repo1.png" />
 
-<img src="images/6.mvenrun.png" />
+## Part 3: Running a Groovy Script
 
-### Output
+In this section, you are going to run a Groovy script directly without using a pipeline. The script is in the file `Script` in the repository you just downloaded.
 
-Go to the build output. First look at the console output to see that the project cloned the repository you specified.
+Open the file in an editor. You should see something like this
 
-<img src="images/7.maven.png" />
+```java
+// Scripted Pipeline (Groovy) example
+// Paste into: New Item -> Pipeline -> Pipeline script
 
-Scroll down and confirm that Maven executed
+def buildLabel = env.BUILD_TAG ?: "unknown"
+def targets = ["unit", "integration"]   // demonstrates Groovy list + iteration
 
-<img src="images/8.build.png" />
+node('built-in') {                      // Declarative uses: agent any / agent { label '...' }
+    timestamps {
+        try {
+            stage('Checkout') {
+                echo "Build: ${buildLabel}"
+                echo "Workspace: ${pwd()}"
+                // For demo purposes, just create a file (no SCM required)
+                writeFile file: 'README.txt', text: "Hello from Scripted Pipeline!\n"
+            }
 
+            stage('Build') {
+                echo "Simulating a build..."
+                if (isUnix()) {
+                    sh 'ls -la'
+                } else {
+                    bat 'dir'
+                }
+            }
 
-### Artifacts
+            stage('Test') {
+                // Scripted pipelines use normal Groovy control flow
+                for (t in targets) {
+                    echo "Running ${t} tests..."
+                    if (t == "integration") {
+                        // Demonstrate failure handling
+                        //echo "Simulating a test failure in integration tests"
+                        //error("Integration tests failed (intentional demo)")
+                    }
+                }
+            }
 
-The output of a Maven build is a jar file. If you go the project page, not the build page there is an option to see the artifacts from the last build by opening the `Workspace` which shows the output of the build. This includes the built jar file.
+            stage('Archive') {
+                archiveArtifacts artifacts: 'README.txt', fingerprint: true
+                echo "Artifact archived"
+            }
 
-<img src="images/9.artif.png" />
+        } catch (err) {
+            // Declarative uses: post { failure { ... } }
+            currentBuild.result = 'FAILURE'
+            echo "Caught error: ${err}"
+            throw err
 
-The project also has unit tests that are automatically run because we specified `package` as a build option. The raw output from the test is in the `surefire-reports` folder in the workspace.
+        } finally {
+            // Declarative uses: post { always { ... } }
+            echo "Always runs (cleanup / notifications)"
+        }
+    }
+}
 
-These can also be seen in the `tests` option in the project screen.
+```
 
-<img src="images/10test.png" />
+Note that this is not a declarative pipeline definition.
 
-## Part 2: Polling the SCM
 
-in the project configuration, go to the Build Triggers section select Build
-Periodically. Enter the cron string */2 * * * * which tells Jenkins to run a build every two
-minutes.
+For the pipeline job you just created, remove the existing pipeline code and past the Groovy script into the pipeline definition instead.
 
-<img src="images/11.poll1.png" />
+<img src="images/groovy1.png" />
 
-Wait a few minutes to confirm the build is triggered.  Once you have done this, go back and unselect the `Build Periodically` option.
+Run the job. It should complete successfully. Check the `pipeline overview` section in the build t see that it ran successfully.
 
-### More Tests
+<img src="images/govvy2.png" />
 
-If the main project window, you can see a cummulative report on how many of the tests have passed by build.
+### Introduce an error
 
-<img src="images/12test.png" />
+Uncomment out these two lines in the script by removing the double slashes. This is going to raise an explicit error condition in the script.  
 
-## Part 2: Using a Local SCM
+```java
+                     //echo "Simulating a test failure in integration tests"
+                     //error("Integration tests failed (intentional demo)")
+```
+ 
+Resave the changed script and run it. In the console output you can see the error condition being raised
+
+<img src="images/groovy3.png" />
+
+And how it is reported in the pipeine overview
+
+<img src="images/groovy5.png" />
+
+You can delete this job since we are done with it.
+
+## Part 4: Jenkinsfile from SCM
+
+In this section of the lab, you use a Jenkinsfile from the repository you downloaded earlier
+
+Set up a new pipeline project. In the pipeline section, select the option `Pipeline script from SCM`.
+
+Then add the repository and ensure you specify the `main` branch instead of `master`
+
+<img src="images/scipt1.png" />
+
+In the `Script Path` put the name of the script to be used in this section `Jenkinsfile0-Hello`
+
+<img src="images/script2.png" />
+
+The script that will be executed is:
 
-For this section, clone the remote repository to your lab machine. In these screenshots the repository was cloned int `c:\repos`.
+```bash
+pipeline {
+    agent any
 
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        stage('Having a nice time') {
+            steps {
+                echo 'Are you still here?'
+            }
+        }
+        stage('Goodbye') {
+            steps {
+                echo 'Get Lost'
+            }
+        }
+    }
+}
 
-<img src="images/13repos.png" />
+```
 
-Alter the trigger sections of the project configuration to use this local repository instead of the remote repository.
+Save, then run the job. Confirm it works by looking at the pipeline overview
 
+<img src="images/script3.png" />
 
-<img src="images/14config.png" />
+## Part 5: Post Stages
 
+Create a new pipeline job exactly the way you did the last one. However, this time use the script file `Jenkinsfile1-Stages` which will load this pipeline code.
 
-Save the changes and run the repository. The build should succeed.
+```bash
+pipeline {
+    agent any
 
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Build'
+            }
+        }
+    stage('Unit-Test') {
+            steps {
+                echo 'Unit Test'
+             
+                
+            }
+        }
+    stage('Package') {
+            steps {
+                echo 'Package'
+            }
+        }
+    stage('Deploy') {
+            steps {
+                echo 'Deploy'
+            }
+        }
+    stage('Report') {
+            steps {
+                echo 'Report'
+            }
+        }
+    }
+    post {
+        always {
+            echo '++++++++ Always Post build step'
+        }
+        success {
+            echo 'SUCCESS!!!'
+        }
+        failure {
+            echo '***** Failure occured'
+        }
+        fixed {
+            echo '----- Problem Fixed'
+        }
+        cleanup {
+            echo 'Bye from Cleanup'
+        }
+    }
+    
+}
 
-## Part 3: Polling the SCM
+```
 
-### Setting up the Trigger
+This defines a straight forward series of stages with several post stages defined. 
 
-For this section, go back to the triggers section and select the `Poll SCM` option and enter the same cron spec you entered earlier. This will poll your local repository every two minutes, and only if it has detected a new commit, then it will run a new build.
+Run the code and look at the console output to see the stages that executed and also look at the pipeline overview and the output from each post step
 
-<img src="images/24Poll.png" />
+<img src="images/post1.png" />
 
-You can wait a few minutes to confirm the builds are not being done. You can also check the `git polling log` on the project page.
+### Post Experiment
 
-<img src="images/15log.png" />
+In this part of the lab you introduce an error into the `Package` stage by misspelling the word `echo` like we did in a previous lab.
 
-### New Commit
+Remember, you will have to check the Jenkinsfile out of the repository, edit it and then commit it back into the repository for the changes to take place.
 
-Open the project in Visual Studio Code and make one change to the `AppTest.java` file.  Change the file from this
+ 
+Run the job and see which stages and post stages execute.
 
-<img src="images/16java1.png" />
+<img src="images/post2.png" />
 
-To this
+Correct the error then run the job twice more and again compare which post stages execute. See if you can explain the result. Consult the Jenkins documentation online if you need a hint.
 
-<img src="images/16java2.png" />
+First time after correction.
 
-*Note: If you don't want to use VSCode, then just open the file in Notepad and make the one line change there.*
+<img src="images/post4.png" />
 
-Save the chances and commit the changes to your local repository.
+Second time after correction.
 
-<img src="images/17%20Commit.png" />
+<img src="images/post5.png" />
 
-Wait for a while, and then you will see the build start and finish in an `unstable` state.
 
-Unstable means the build finished successfully but the unit test failed. This is marked with an orange exclamation mark. Also notice the display test results show the last build failed the unit tests.
+## Part 6: Environment Variables
 
-<img src="images/18Result.png" />
-
-#### Optional
-
-Go back and correct the error so that the next polled build is successful and stable.
-
-## Clean up
-
-Go back into the configuration and uncheck the `Poll SCM` option in `Triggers`
 
 
 ## End Lab
