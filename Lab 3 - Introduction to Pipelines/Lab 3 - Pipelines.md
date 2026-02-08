@@ -1,16 +1,16 @@
 # Lab 2 - SCM and Build Tools
 
-The objective of this lab work is to work with git repositories and to use the Maven plug that integrates Maven with Jenkins.
+The objective of this lab work git repositories and to use the Maven plug that integrates Maven with Jenkins.
 
-Check to see that Jenkins is running and that you are logged in before starting the project.
+Check to see that Jenkins is running and that you are logged in before starting the project
 
 ## Part 1: Create and Run the Project
 
-Go to the main screen and select the `New Item` option. At the project definition screen, select the `Maven Project' option. If you don't see it, then the Maven plugin needs to be installed. The instructor can show you how to do this.
+Go to the main screen and select the `New Item` option. At the project definition screen, select the `Maven Project' option. If you don't see it, then the Maven plugin needs to be installed. THe instructor can show you how to do this.
 
 <img src="images/1.maven.png" />
 
-You also need to have the `Maven Tool Definition` entered in the Jenkins tool section. This should be done already in the Tools section of Jenkins as shown below
+You also need to have the Maven Tool Definition entered in the Jenkins tool section. This should be done already in the Tools section of Jenkins as shown below
 
 <img src="images/2.Maven.png" />
 
@@ -24,16 +24,14 @@ The repository we will be using is `https://github.com/ExgnosisClasses/MavenRefe
 
 Under the source code management section of the project, enter the repository location as shown.
 
-You also need to change the branch name from `master` to `main`
-
-Jenkins defaults to using the older branch naming convention.
+You also need to change the branch name from `master` to `main`. Jenkins defaults to using the older branch naming convention.
 
 
 <img src="images/3.maven.png" />
 
-### Build and Run
+### Build Step and Run
 
-Because this is a Maven project, the plugin has added some Maven specific configuration items. You can leave the POM file specification as it is, but under the `Goals and Options` section, specify the specific actions we want Maven to execute. In this case `clean, validate and package`
+Because this is a Maven project, the plugin has added some Maven specific configuration items. You can leave the POM file specification as it is, but under the `Goals and Options` section, we specify the specific actions we want Maven to execute. In this case `clean, validate and package`
 
 <img src="images/4.mvn.png" />
 
@@ -67,7 +65,7 @@ These can also be seen in the `tests` option in the project screen.
 ## Part 2: Polling the SCM
 
 in the project configuration, go to the Build Triggers section select Build
-Periodically. Enter the cron string `*/2 * * * *` which tells Jenkins to run a build every two
+Periodically. Enter the cron string */2 * * * * which tells Jenkins to run a build every two
 minutes.
 
 <img src="images/11.poll1.png" />
@@ -100,7 +98,7 @@ Save the changes and run the repository. The build should succeed.
 
 ### Setting up the Trigger
 
-For this section, go back to the triggers section and select the `Poll SCM` option and enter the same cron spec you entered earlier. This will poll your local repository every two minutes, and only if it has detected a new commit will Jenkins run a new build.
+For this section, go back to the triggers section and select the `Poll SCM` option and enter the same cron spec you entered earlier. This will poll your local repository every two minutes, and only if it has detected a new commit, then it will run a new build.
 
 <img src="images/24Poll.png" />
 
