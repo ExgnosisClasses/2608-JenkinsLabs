@@ -38,9 +38,9 @@ Clone this git repository into your lab machine. In this example, it is being cl
 
 ## Part 3: Running a Groovy Script
 
-In this section, you are going to run a Groovy script directly without using a pipeline. The script is in the file `Script` in the repository you just downloaded.
+In this section, you are going to run a Groovy script directly without using a declarative pipeline. The script is in the file `Script` in the repository you just downloaded.
 
-Open the file in an editor. You should see something like this
+Open the file in an editor. You should see this
 
 ```java
 // Scripted Pipeline (Groovy) example
@@ -107,7 +107,7 @@ For the pipeline job you just created, remove the existing pipeline code and pas
 
 <img src="images/groovy1.png" />
 
-Run the job. It should complete successfully. Check the `pipeline overview` section in the build t see that it ran successfully.
+Run the job. It should complete successfully. Check the `pipeline overview` section in the build to see that it ran successfully.
 
 <img src="images/govvy2.png" />
 
@@ -120,7 +120,7 @@ Uncomment out these two lines in the script by removing the double slashes. This
                      //error("Integration tests failed (intentional demo)")
 ```
  
-Resave the changed script and run it. In the console output you can see the error condition being raised
+Save the changed script and run it. In the console output you can see the error condition being raised
 
 <img src="images/groovy3.png" />
 
@@ -234,7 +234,7 @@ pipeline {
 
 ```
 
-This defines a straight forward series of stages with several post stages defined. 
+This defines a straight forward series of stages with several post stages also defined. 
 
 Run the code and look at the console output to see the stages that executed and also look at the pipeline overview and the output from each post step
 
@@ -242,9 +242,9 @@ Run the code and look at the console output to see the stages that executed and 
 
 ### Post Experiment
 
-In this part of the lab you introduce an error into the `Package` stage by misspelling the word `echo` like we did in a previous lab.
+In this part of the lab, you are going to introduce an error into the `Package` stage by misspelling the word `echo` like we did in a previous lab.
 
-Remember, you will have to check the Jenkinsfile out of the repository, edit it and then commit it back into the repository for the changes to take place.
+Remember, you will have to check the Jenkinsfile out of the repository, edit it and then commit it back into the repository for the changes to take place. You have just created a new version of the Jenkinsfile, which is exactly how pipeline code should be managed.
 
  
 Run the job and see which stages and post stages execute.
