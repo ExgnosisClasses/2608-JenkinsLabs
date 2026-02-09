@@ -264,6 +264,101 @@ Second time after correction.
 
 ## Part 6: Environment Variables
 
+For this and the next section, don't load the pipeline definition from the SCM like we did for the last two sections, but just open the file in a text editor and paste in into the pileline section of the pipeline project.
+
+The first script shows how to access the Jenkins supplied environmental variables
+
+```bash
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                echo "Running ${env.BUILD_TAG} on ${env.JENKINS_URL}"
+                echo "java ${env.JAVA_HOME}"
+            }
+        }
+    }
+}
+```
+
+Run this several times and see if you can find out what the values for these variables are.
+
+<img src="images/env1.png" />
+
+### Conditional Control
+
+Create a new pipeline project using this script which is `Jenkinsfile4-Env2` in the repository
+
+```bash
+pipeline {
+    agent any
+    environment {
+        IN_PROD = 'true'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo "Build"
+                echo "Value of IN_PROD is ${IN_PROD}"
+            }
+        }
+    stage('Test') {
+       
+            steps {
+                echo 'Test'
+                
+            }
+        }
+    stage('Package') {
+        when {
+            anyOf {
+            environment name: "IN_PROD", value: 'true'
+            branch 'production'
+            }
+        }
+            steps {
+                echo 'Package'
+            
+            }
+        }
+    stage('Deploy') {
+            steps {
+                echo 'Deploy'
+            }
+        }
+    stage('Report') {
+            steps {
+                echo 'Report'
+            }
+        }
+    }
+    
+}
+
+```
+
+In this script, the environment variable `IN_PROD` determines if the `Package` stage is build. If there is a `when` clause at the start of a stage, and it evaluates to `true`, the stage executes. Otherwise, the stage is skipped. 
+
+Create a new pipeline project with this code and run it to see all the stages executing. Also check the console output to see the value of the environment variable
+
+
+<img src="images/env2.png" />
+
+Edit the code to assign the environment variable the value `false`
+
+
+```bash
+pipeline {
+    agent any
+    environment {
+        IN_PROD = 'false'
+    }
+```
+
+Save the pipeline and rerun it. Look at the pipeline overview to see the stage has now been skipped
+
+<img src="images/env3.png" />
 
 
 ## End Lab
