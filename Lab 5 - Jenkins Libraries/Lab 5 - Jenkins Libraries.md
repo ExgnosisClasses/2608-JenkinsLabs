@@ -29,13 +29,13 @@ Jenkins has to know where to find the library. Open up the configuration window 
 
 <img src="images/config1.png" />
 
-Select the option `System - configure global settings and paths` under the `System Configuration` section.
+Select the option `System - configure global settings and paths` located under the `System Configuration` section.
 
-Scroll down until you find the section labeled `Global Trusted Pipelne Libraries` Select the `Add` button and provide the name of the library and the branch of the repo to use, in this case `main`
+Scroll down until you find the section labeled `Global Trusted Pipelne Libraries` Select the `Add` button and provide the name of the library `jenkins-library` and the branch of the repo to use, in this case `main`
 
 <img src="images/lib1.png" />
 
-Scroll down a bit further under `Retrieval Method`, add the information about the repository that holds the library
+Scroll down a bit further under `Retrieval Method`, and add the information about the location of the repository that holds the library code
 
 <img src="images/lib2.png" />
 
@@ -43,7 +43,9 @@ Select `Save` and the library is configured.
 
 ## Part 3: Create the script
 
-Create a new Jenkins pipeline project and add this script. Don't forget to add the trailing underscore to the `@Library('jenkins-library') _` line
+Create a new Jenkins pipeline project and add this script. 
+
+Don't forget to add the trailing underscore to the `@Library('jenkins-library') _` line
 
 
 ```bash
@@ -69,7 +71,7 @@ In the steps section, notice that the `hello.groovy` function is now step that c
 
 ## Part 4: Run the Script
 
-Execute the script and examine the pipeline overview. You can the output of the script
+Execute the script and examine the pipeline overview. Confirm that you can see the output of the Groovy function call.
 
 <img src="images/lib3.png" />
 
